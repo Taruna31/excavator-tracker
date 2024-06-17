@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excavator Project</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <style>
+    #map {
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([-6.370286, 106.823071], 16);  
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const customIcon = L.icon({
+      iconUrl: 'excavator.png',  
+      iconSize: [40, ],          
+      iconAnchor: [22, 94],        
+      popupAnchor: [-3, -76],      
+    });
+
+    let marker = L.marker([-6.370286 , 106.823071], {icon: customIcon}).addTo(map);  
+
+    const ws = new WebSocket('ws://localhost:3000');
+
+    ws.onmessage = function(event) {
+      const location = JSON.parse(event.data);
+      marker.setLatLng([location.lat, location.lng]);
+      map.setView([location.lat, location.lng], 16);  
+    };
+  </script>
+</body>
+</html>
